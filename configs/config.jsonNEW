@@ -1,0 +1,103 @@
+{
+  "website":"hammerstein.allbeauty.com",
+  "baseUrl":"hammerstein.allbeauty.com",
+  "imageUrl":"www.allbeauty.com",
+  "_ipWhiteList": [
+    "88.81.145.82",
+    "46.31.242.18",
+    "46.31.242.19",
+    "46.31.242.20",
+
+    "193.93.224.10",
+    "217.13.139.162",
+
+    "82.199.90.163",
+    "91.212.42.10",
+
+    "83.216.95.225",
+    "217.111.196.141",
+
+    "195.35.90.68",
+
+    "164.39.173.238",
+    "89.197.9.18",
+    "4.59.160.2",
+    "89.104.40.238",
+
+    "151.226.188.133",
+    "82.41.130.40",
+    "81.168.82.170",
+    "80.168.122.82",
+
+    "82.10.113.111"
+  ],
+  "forceSsl": true,
+  "forceHttps": false,
+  "channel":1,
+  "debug":{
+    "templates": false,
+    "noSsl": false,
+    "junkScripts": true
+  },
+  "databases":{
+    "default":{
+      "server":"10.90.0.212",
+      "username":"CheapSmellsWS",
+      "password":"rabbitsF00t",
+      "schema":"allbeauty"
+    },
+    "report":{
+      "server":"10.90.0.212",
+      "username":"CheapSmellsWS",
+      "password":"rabbitsF00t",
+      "schema":"allbeauty"
+    },
+    "shared":{
+      "server":"10.90.0.212",
+      "username":"CheapSmellsWS",
+      "password":"rabbitsF00t",
+      "schema":"allbeauty"
+    }
+  },
+  "memcache":{
+    "default":{
+      "server":"localhost",
+      "port":11211,
+      "prefix":"tos_"
+    }
+  },
+  "algolia": {
+    "indexName": "test_allbeauty_products"
+  },
+  "objectCache": "redis",
+  "redis": {
+    "hosts": "[tcp://localhost]",
+    "prefix": "cw:"
+  },
+  "mail": {
+    "api": "http://hammerstein.allbeauty.com/pat/index.php",
+    "token": "I[AsQpL!VoFPB%gH9}H'5{wobR[jUn;}]-09GF5[/`nhv-BP@^XfSk@z}K2RF18",
+    "log": "/var/log/mail-service.log"
+  },
+  "catalogue": {
+    "api": "https://www.allbeauty.com/api/",
+    "token": "6ASBWRNK0RK5jZjfl0wwRDXB34YLfXnZybTy71C2geLy8WxEigBKBpkrSx14OrR8"
+  },
+  "auth": {
+     "facebook": {
+       "provider": "FacebookProvider",
+       "state": "enabled"
+     },
+     "google": {
+       "provider": "GoogleProvider",
+       "state": "enabled",
+       "secretFile": "/home/deploy/toska/google/g.json"
+     }
+   },
+   "apiClient": {
+     "facebook": {
+       "app_id": "1605346869774692",
+       "app_secret": "6c4387ed1ce3925d36e7fca79e06e740"
+     }
+   }
+}

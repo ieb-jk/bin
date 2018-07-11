@@ -1,0 +1,62 @@
+#!/bin/bash
+
+export WORKDIR=/home/deploy/toska
+
+err() {
+	echo "FAIL: $1"
+	exit 2
+}
+
+pr() {
+	cd $WORKDIR;set -o vi
+	if [ -z "$2" ];then echo "Resetting to Dev ?";else echo "Preparing PR $2 ?";fi
+	read aaa1
+	git fetch && git checkout -f develop
+	git pull
+	git branch | grep -v "develop" | xargs git branch -D 
+	if [ ! -z "$2" ];then
+		git checkout $2
+		git pull
+		git merge -m "Merge develop" develop
+	fi
+	grep -r "<<<< HEAD" && err "Address conflicts"
+	./vendor/bin/phinx migrate -e hammerstein;grunt dist  # Ensures latest development is pulled upto PR
+	git status # Verify no further outstanding changes
+	clearc
+}
+
+reset() {
+	cd $WORKDIR
+	echo "Reset environment to dev if necessary";read zzz
+	php cron/importCatalogueData.php
+}
+
+clearc() {
+	rm -rf /tmp/templateCache/1/hammerstein.allbeauty.com/*
+	echo -e "\n\nCached content = $(ls -l /tmp/templateCache/1/hammerstein.allbeauty.com)"
+}
+
+index() {
+	cd $WORKDIR
+	php cron/generateProductAvailability.php
+	INDICES="$WORKDIR/storage/dd_Algolia*"
+	echo "MANUAL: Remove 'test_allbeauty_productsrelevance_EN' index from https://www.algolia.com/apps/VS22L5JM4O/explorer/indices"
+	rm -rf $INDICES
+	find $INDICES 2>/dev/null && err "$INDICES still remain"
+	php cron/generateAlgoliaIndices.php force
+	clearc
+}
+
+logs() {
+	echo "last ten logs updated"
+	ls -ltr /var/log/httpd/* | tail -10
+	errlog="/var/log/httpd/hammerstein.allbeauty.com-error_log"
+	echo "t to Tail or <CR> to vi $errlog ?";read ToO
+	[[ "$ToO" =~ ^(T|t)$ ]] && tail -f $errlog || vi $errlog
+}
+
+help() {
+	declare -F | sed "s/^declare -f //g"
+}
+ 
+$1 $@
