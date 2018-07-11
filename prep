@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export WORKDIR=/home/deploy/toska
-
 err() {
 	echo "FAIL: $1"
 	exit 2
@@ -20,7 +18,7 @@ pr() {
 		git merge -m "Merge develop" develop
 	fi
 	grep -r "<<<< HEAD" && err "Address conflicts"
-	./vendor/bin/phinx migrate -e hammerstein;grunt dist  # Ensures latest development is pulled upto PR
+	./vendor/bin/phinx migrate -e ${qasite};grunt dist  # Ensures latest development is pulled upto PR
 	git status # Verify no further outstanding changes
 	clearc
 }
@@ -32,8 +30,7 @@ reset() {
 }
 
 clearc() {
-	rm -rf /tmp/templateCache/1/hammerstein.allbeauty.com/*
-	echo -e "\n\nCached content = $(ls -l /tmp/templateCache/1/hammerstein.allbeauty.com)"
+	(cd /tmp/templateCache/1/${qasite}.allbeauty.com && rm -rf * && echo -e "\n\nCached content $(ls -l)")
 }
 
 index() {
@@ -48,19 +45,28 @@ index() {
 }
 
 logs() {
-	echo "last ten logs updated"
+	clear
+	echo "Last ten logs updated..."
 	ls -ltr /var/log/httpd/* | tail -10
-	errlog="/var/log/httpd/hammerstein.allbeauty.com-error_log"
-	echo "t to Tail or <CR> to vi $errlog ?";read ToO
-	[[ "$ToO" =~ ^(T|t)$ ]] && tail -f $errlog || vi $errlog
-}
-
-help() {
-	declare -F | sed "s/^declare -f //g"
+	errlog="$(ls -tr /var/log/httpd/* | grep "error" | tail -1)"
+	echo -e "\nT=Tail, <CR>=Open ($errlog) ?";read ToO
+	[[ "$ToO" =~ ^(T|t)$ ]] && tail -f $errlog || vim $errlog
 }
 
 init() {
 	sudo yum install vim
 }
  
+help() {
+	declare -F | sed "s/^declare -f //g"
+}
+
+case $(hostname -I) in
+	"10.90.0.249 ") qasite="slaine";;
+	"10.90.0.185 ") qasite="hammerstein";;
+	*) err "QA server not recognized";;
+esac
+
+export WORKDIR=/home/deploy/toska
+
 $1 $@
