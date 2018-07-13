@@ -1,7 +1,7 @@
 #!/bin/bash
 
 err() {
-	echo "FAIL: $1"
+	echo -e "\nFAIL: $1\n"
 	exit 2
 }
 
@@ -11,16 +11,19 @@ pr() {
 	read aaa1
 	git fetch && git checkout -f develop
 	git pull
-	git branch | grep -v "develop" | xargs git branch -D 
+	git branch | grep -v "develop" | xargs git branch -D 2>&1 | egrep -v "^error: branch"
 	if [ ! -z "$2" ];then
 		git checkout $2
 		git pull
 		git merge -m "Merge develop" develop
 	fi
 	grep -r "<<<< HEAD" && err "Address conflicts"
-	./vendor/bin/phinx migrate -e ${qasite};grunt dist  # Ensures latest development is pulled upto PR
-	git status # Verify no further outstanding changes
+	echo -e "\n\nChecking for unexpected files..."
+	if ( git status | sed 1,6d | egrep -v "adminnew\/2018-..*\.csv|framework|^# *$|^nothing added to commit..*$" );then err "Found above files";fi
+	./vendor/bin/phinx migrate -e ${qasite}
+	grunt dist
 	clearc
+	echo -e "\nAll done\n"
 }
 
 reset() {
