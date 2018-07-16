@@ -1,8 +1,12 @@
 #!/bin/bash
 
-err() {
+fail() {
 	echo -e "\nFAIL: $1\n"
 	exit 2
+}
+
+pass() {
+	echo -e "\nPASS: $1\n"
 }
 
 pr() {
@@ -17,9 +21,10 @@ pr() {
 		git pull
 		git merge -m "Merge develop" develop
 	fi
-	grep -r "<<<< HEAD" && err "Address conflicts"
-	echo -e "\n\nChecking for unexpected files..."
-	if ( git status | sed 1,6d | egrep -v "adminnew\/2018-..*\.csv|framework|^# *$|^nothing added to commit..*$" );then err "Found above files";fi
+	grep -r "<<<< HEAD" && fail "Address conflicts"
+	pass "No conflicts"
+	if ( git status | sed 1,6d | egrep -v "adminnew\/2018-..*\.csv|framework|^# *$|^nothing added to commit..*$" );then fail "Found above files";fi
+	pass "No unexpected files"
 	./vendor/bin/phinx migrate -e ${qasite}
 	grunt dist
 	clearc
@@ -42,7 +47,7 @@ index() {
 	INDICES="$WORKDIR/storage/dd_Algolia*"
 	echo "MANUAL: Remove 'test_allbeauty_productsrelevance_EN' index from https://www.algolia.com/apps/VS22L5JM4O/explorer/indices"
 	rm -rf $INDICES
-	find $INDICES 2>/dev/null && err "$INDICES still remain"
+	find $INDICES 2>/dev/null && fail "$INDICES still remain"
 	php cron/generateAlgoliaIndices.php force
 	clearc
 }
@@ -67,7 +72,7 @@ help() {
 case $(hostname -I) in
 	"10.90.0.249 ") qasite="slaine";;
 	"10.90.0.185 ") qasite="hammerstein";;
-	*) err "QA server not recognized";;
+	*) fail "QA server not recognized";;
 esac
 
 export WORKDIR=/home/deploy/toska
