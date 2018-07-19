@@ -42,9 +42,11 @@ clearc() {
 }
 
 regen() {
+	d1="$(date)"
 	cd $WORKDIR
 	php cron/regenerateCatalogues.php
 	index
+	echo -e "Started: $d1\nStopped: $(date)"
 }
 
 index() {
