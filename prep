@@ -41,6 +41,12 @@ clearc() {
 	(cd /tmp/templateCache/1/${qasite}.allbeauty.com && rm -rf * && echo -e "\n\nCached content $(ls -l)")
 }
 
+regen() {
+	cd $WORKDIR
+	php cron/regenerateCatalogues.php
+	index
+}
+
 index() {
 	cd $WORKDIR
 	php cron/generateProductAvailability.php
