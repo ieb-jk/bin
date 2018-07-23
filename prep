@@ -66,7 +66,7 @@ logs() {
 	ls -ltr /var/log/httpd/* | tail -10
 	errlog="$(ls -tr /var/log/httpd/* | grep "error" | tail -1)"
 	echo -e "\n<CR> to tail (or 'O' to open) $errlog ?";read OtO
-	[[ "$OtO" =~ ^(O|o)$ ]] && vim $errlog || tail -f $errlog
+	[[ "$OtO" =~ ^(O|o)$ ]] && vim $errlog || (echo "Tailing..." && tail -f $errlog)
 }
 
 init() {
