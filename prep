@@ -13,6 +13,7 @@ pr() {
 	cd $WORKDIR;set -o vi
 	if [ -z "$2" ];then echo "Resetting to Dev ?";else echo "Preparing PR $2 ?";fi
 	read aaa1
+    #git reset --hard develop
 	git fetch && git checkout -f develop
 	git pull
 	git branch | grep -v "develop" | xargs git branch -D 2>&1 | egrep -v "^error: branch"
@@ -23,7 +24,7 @@ pr() {
 	fi
 	grep -r "<<<< HEAD" && fail "Address conflicts"
 	pass "No conflicts"
-	if ( git status | sed 1,6d | egrep -v "adminnew\/2018-..*\.csv|framework|^# *$|^nothing added to commit..*$" );then fail "Found above files";fi
+	if ( git status | sed 1,6d | egrep -v ".csv$|.svg$|^# *$|^nothing added to commit..*$" );then fail "Found above files";fi
 	pass "No unexpected files"
 	./vendor/bin/phinx migrate -e ${qasite}
 	grunt dist
@@ -43,21 +44,34 @@ clearc() {
 
 regen() {
 	d1="$(date)"
+	(cd /tmp/templateCache/1/${qasite}.allbeauty.com && rm -rf * && echo -e "\n\nCached content $(ls -l)")
 	cd $WORKDIR
+	rm -rf $WORKDIR/storage/dd_Algolia*
+	php cron/generateProductAvailability.php
 	php cron/regenerateCatalogues.php
-	index
+	php cron/generateAlgoliaIndices.php force
 	echo -e "Started: $d1\nStopped: $(date)"
+}
+
+# List files created or modified in last 60 mins
+mod() {
+     find . -cmin -60 -o -mmin -60
 }
 
 index() {
 	cd $WORKDIR
 	php cron/generateProductAvailability.php
+    algolia
+}
+
+algolia() {
 	INDICES="$WORKDIR/storage/dd_Algolia*"
-	echo "MANUAL: Remove 'test_allbeauty_productsrelevance_EN' index from https://www.algolia.com/apps/VS22L5JM4O/explorer/indices"
+	cd $WORKDIR
 	rm -rf $INDICES
 	find $INDICES 2>/dev/null && fail "$INDICES still remain"
+    echo "Regenerating $(grep 'indexName' config.json) on https://www.algolia.com/apps/VS22L5JM4O/explorer/indices"
 	php cron/generateAlgoliaIndices.php force
-	clearc
+    clearc
 }
 
 logs() {
