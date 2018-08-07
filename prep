@@ -89,6 +89,7 @@ init() {
  
 help() {
 	declare -F | sed "s/^declare -f //g"
+	echo -e "\nWORKDIR = $WORKDIR\n\n"
 }
 
 [ -z "$WORKDIR" ] && fail "WORKDIR not set"
