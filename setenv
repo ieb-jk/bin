@@ -1,5 +1,16 @@
-set -o vi
+echo "Custom settings"
+
+#Env Vars
 [ $(echo $PATH | grep "jkbin") ] || export PATH=.:~/jkbin:$PATH
 export EDITOR=vim TERM=cygwin
+
+
+#Sensitive vars
 . ~/.ssh/setenv
+
+# Alias
+alias docClean="docker stop \$(docker ps -qa) && docker rm \$(docker ps -qa)"
+
+# cd to workdir
+set -o vi
 cd $WORKDIR
