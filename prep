@@ -91,12 +91,6 @@ help() {
 	declare -F | sed "s/^declare -f //g"
 }
 
-case $(hostname -I) in
-	"10.90.0.249 ") qasite="slaine";;
-	"10.90.0.185 ") qasite="hammerstein";;
-	*) fail "QA server not recognized";;
-esac
-
-export WORKDIR=/home/deploy/toska
+[ -z "$WORKDIR" ] && fail "WORKDIR not set. Usually this is /hom/deploy/toska"
 
 $1 $@
