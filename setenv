@@ -1,7 +1,7 @@
 echo "Custom settings"
 
 #Env Vars
-[ $(echo $PATH | grep "jkbin") ] || export PATH=.:~/jkbin:$PATH
+[ $(echo $PATH | grep "jkbin") ] || export PATH=.:$(cd ~;pwd)/jk:$PATH
 export EDITOR=vim TERM=cygwin
 
 
