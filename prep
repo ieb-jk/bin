@@ -91,6 +91,6 @@ help() {
 	declare -F | sed "s/^declare -f //g"
 }
 
-[ -z "$WORKDIR" ] && fail "WORKDIR not set. Usually this is /hom/deploy/toska"
+: ${WORKDIR:=/home/deploy/toska}
 
 $1 $@
