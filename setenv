@@ -1,4 +1,3 @@
 set -o vi
-PATH=/home/jkemp:$PATH
-export WORKDIR=/home/deploy/toska EDTOR=vim
+export PATH=~/jkbin:$PATH EDITOR=vim 
 cd $WORKDIR
