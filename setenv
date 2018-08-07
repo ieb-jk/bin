@@ -1,3 +1,5 @@
 set -o vi
-export PATH=~/jkbin:$PATH EDITOR=vim 
+[ $(echo $PATH | grep "jkbin") ] || export PATH=.:~/jkbin:$PATH
+export EDITOR=vim TERM=cygwin
+. ~/.ssh/setenv
 cd $WORKDIR
