@@ -93,4 +93,5 @@ help() {
 }
 
 [ -z "$WORKDIR" ] && fail "WORKDIR not set"
+
 $1 $@

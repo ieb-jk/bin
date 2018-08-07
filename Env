@@ -4,10 +4,10 @@ echo "Custom settings"
 [ $(echo $PATH | grep "jk") ] || export PATH=.:$(cd ~;pwd)/jk:$PATH
 export EDITOR=vim TERM=cygwin
 
-# Alias
 alias docClean="docker stop \$(docker ps -qa) && docker rm \$(docker ps -qa)"
 
 set -o vi
-[ -z "$WORKDIR" ] && export WORKDIR=/home/deploy/toska #Default working directory
-cd $WORKDIR
+
+[ -d /home/deploy/toska ] && export WORKDIR=/home/deploy/toska
+[ -d "$WORKDIR" ] && cd $WORKDIR
 
