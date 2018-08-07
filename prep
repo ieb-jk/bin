@@ -91,7 +91,5 @@ help() {
 	declare -F | sed "s/^declare -f //g"
 }
 
-[ -z "$WORKDIR" ] && export WORKDIR=/home/deploy/toska #Default working directory
-echo "Working dir = $WORKDIR"
-
+[ -z "$WORKDIR" ] && fail "WORKDIR not set"
 $1 $@

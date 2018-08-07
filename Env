@@ -8,4 +8,6 @@ export EDITOR=vim TERM=cygwin
 alias docClean="docker stop \$(docker ps -qa) && docker rm \$(docker ps -qa)"
 
 set -o vi
+[ -z "$WORKDIR" ] && export WORKDIR=/home/deploy/toska #Default working directory
 cd $WORKDIR
+
