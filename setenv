@@ -4,13 +4,8 @@ echo "Custom settings"
 [ $(echo $PATH | grep "jk") ] || export PATH=.:$(cd ~;pwd)/jk:$PATH
 export EDITOR=vim TERM=cygwin
 
-
-#Sensitive vars
-. ~/.ssh/setenv
-
 # Alias
 alias docClean="docker stop \$(docker ps -qa) && docker rm \$(docker ps -qa)"
 
-# cd to workdir
 set -o vi
 cd $WORKDIR
