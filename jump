@@ -9,8 +9,8 @@ options=(
 	"jenkins.pem ec2-user@34.244.59.70 # Jenkins Worker2"
 )
 
-PS3="$Cmd:"
 [ -z "$1" ] && Cmd="ssh" || Cmd="sftp"
+PS3="$Cmd option (press ENTER for list)? "
 
 select opt in "${options[@]}"
 do
