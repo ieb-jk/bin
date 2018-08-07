@@ -1,0 +1,20 @@
+#!/bin/bash
+
+options=(
+	"toska.pem centos@52.211.2.62 #Hammerstein"
+	"toska.pem centos@52.212.191.236 #Slaine"
+	"jenkins.pem ec2-user@34.249.244.138 #Jenkins Blue"
+	"jenkins.pem ec2-user@52.209.34.180 # Jenkins Green"
+	"jenkins.pem ec2-user@34.250.45.144 # Jenkins Worker1"
+	"jenkins.pem ec2-user@34.244.59.70 # Jenkins Worker2"
+)
+
+PS3="$Cmd:"
+[ -z "$1" ] && Cmd="ssh" || Cmd="sftp"
+
+select opt in "${options[@]}"
+do
+	C="$Cmd -i ~/.ssh/$opt"
+	echo "$C...";eval $C
+done
+
