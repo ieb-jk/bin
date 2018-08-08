@@ -89,7 +89,7 @@ init() {
  
 help() {
 	declare -F | sed "s/^declare -f //g"
-	echo -e "\nWORKDIR = $WORKDIR\nSERVER=$qasite\n"
+	echo -e "\nWORKDIR: $WORKDIR\nSERVER.: $qasite\n"
 }
 
 [ -z "$WORKDIR" ] && fail "WORKDIR not set"
