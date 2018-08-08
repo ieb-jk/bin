@@ -93,5 +93,8 @@ help() {
 }
 
 [ -z "$WORKDIR" ] && fail "WORKDIR not set"
+qasite=$(uname -n | sed "s/\...*//g")
+[ "$qasite" == "ip-10-90-0-249" ] && qasite="slaine"
+[ "$qasite" == "ip-10-90-0-185" ] && qasite="hammerstein"
 
 $1 $@
