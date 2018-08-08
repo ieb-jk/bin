@@ -10,7 +10,7 @@ pass() {
 }
 
 pr() {
-	cd $WORKDIR;set -o vi
+	cd $WORKDIR
 	if [ -z "$2" ];then echo "Resetting to Dev ?";else echo "Preparing PR $2 ?";fi
 	read aaa1
     #git reset --hard develop
@@ -32,46 +32,21 @@ pr() {
 	echo -e "\nAll done\n"
 }
 
-reset() {
-	cd $WORKDIR
-	echo "Reset environment to dev if necessary";read zzz
-	php cron/importCatalogueData.php
-}
-
 clearc() {
 	(cd /tmp/templateCache/1/${qasite}.allbeauty.com && rm -rf * && echo -e "\n\nCached content $(ls -l)")
 }
 
-regen() {
+reindex() {
 	d1="$(date)"
-	(cd /tmp/templateCache/1/${qasite}.allbeauty.com && rm -rf * && echo -e "\n\nCached content $(ls -l)")
-	cd $WORKDIR
-	rm -rf $WORKDIR/storage/dd_Algolia*
-	php cron/generateProductAvailability.php
-	php cron/regenerateCatalogues.php
-	php cron/generateAlgoliaIndices.php force
-	echo -e "Started: $d1\nStopped: $(date)"
-}
-
-# List files created or modified in last 60 mins
-mod() {
-     find . -cmin -60 -o -mmin -60
-}
-
-index() {
-	cd $WORKDIR
-	php cron/generateProductAvailability.php
-    algolia
-}
-
-algolia() {
+	echo -e "For complete reset, run;\nphp cron/generateProductAvailability.php\nphp cron/regenerateCatalogues.php\ncron/generateAlgoliaIndices.php force\n"
+    clearc
 	INDICES="$WORKDIR/storage/dd_Algolia*"
 	cd $WORKDIR
 	rm -rf $INDICES
 	find $INDICES 2>/dev/null && fail "$INDICES still remain"
     echo "Regenerating $(grep 'indexName' config.json) on https://www.algolia.com/apps/VS22L5JM4O/explorer/indices"
 	php cron/generateAlgoliaIndices.php force
-    clearc
+	echo -e "Started: $d1\nStopped: $(date)"
 }
 
 logs() {
@@ -83,8 +58,9 @@ logs() {
 	[[ "$OtO" =~ ^(O|o)$ ]] && vim $errlog || (echo "Tailing..." && tail -f $errlog)
 }
 
-init() {
-	sudo yum install vim
+# List files created or modified in last 60 mins
+mod() {
+     find . -cmin -60 -o -mmin -60
 }
  
 help() {
