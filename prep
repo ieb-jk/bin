@@ -1,11 +1,11 @@
 #!/bin/bash
 
-fail() {
+__fail() {
 	echo -e "\nFAIL: $1\n"
 	exit 2
 }
 
-pass() {
+__pass() {
 	echo -e "\nPASS: $1\n"
 }
 
@@ -22,10 +22,10 @@ pr() {
 		git pull
 		git merge -m "Merge develop" develop
 	fi
-	grep -r "<<<< HEAD" && fail "Address conflicts"
-	pass "No conflicts"
-	if ( git status | sed 1,6d | egrep -v ".csv$|.svg$|^# *$|^nothing added to commit..*$" );then fail "Found above files";fi
-	pass "No unexpected files"
+	grep -r "<<<< HEAD" && __fail "Address conflicts"
+	__pass "No conflicts"
+	if ( git status | sed 1,6d | egrep -v ".csv$|.svg$|^# *$|^nothing added to commit..*$" );then __fail "Found above files";fi
+	__pass "No unexpected files"
 	./vendor/bin/phinx migrate -e ${qasite}
 	grunt dist
 	clearc
@@ -43,7 +43,7 @@ reindex() {
 	INDICES="$WORKDIR/storage/dd_Algolia*"
 	cd $WORKDIR
 	rm -rf $INDICES
-	find $INDICES 2>/dev/null && fail "$INDICES still remain"
+	find $INDICES 2>/dev/null && __fail "$INDICES still remain"
     echo "Regenerating $(grep 'indexName' config.json) on https://www.algolia.com/apps/VS22L5JM4O/explorer/indices"
 	php cron/generateAlgoliaIndices.php force
 	echo -e "Started: $d1\nStopped: $(date)"
@@ -64,11 +64,12 @@ mod() {
 }
  
 help() {
-	declare -F | sed "s/^declare -f //g"
+	echo -e "\nUsage: $0 [Option]\n\nOptions;"
+	declare -F | grep -v "__" | sed -e "s/^declare -f /\t/g" 
 	echo -e "\nWORKDIR: $WORKDIR\nSERVER.: $qasite\n"
 }
 
-[ -z "$WORKDIR" ] && fail "WORKDIR not set"
+[ -z "$WORKDIR" ] && __fail "WORKDIR not set"
 qasite=$(uname -n | sed "s/\...*//g")
 [ "$qasite" == "ip-10-90-0-249" ] && qasite="slaine"
 [ "$qasite" == "ip-10-90-0-185" ] && qasite="hammerstein"
