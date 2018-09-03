@@ -58,10 +58,19 @@ logs() {
 	[[ "$OtO" =~ ^(O|o)$ ]] && vim $errlog || (echo "Tailing..." && tail -f $errlog)
 }
 
-# List files created or modified in last 60 mins
-mod() {
+
+mods() { # List files created or modified in last 60 mins
      find . -cmin -60 -o -mmin -60
 }
+
+csv() { # Transpose a line from a CSV with it's header
+    [ -z "$rep" ] && export rep="./htdocs/reports/styleloungeCsDede.txt" 
+    [ -z "$val" ] && export val="98452"
+    paste -d'=' <(head -1 $rep | tr '|' '\n') <(cat $rep | grep $val | tr '|' '\n')
+    echo -e "\n\nUsed (export values to override)...\n\tval=$val \n\trep=$rep\n"
+}
+
+
  
 help() {
 	echo -e "\nUsage: $0 [Option]\n\nOptions;"
