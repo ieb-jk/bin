@@ -24,7 +24,7 @@ pr() {
 	fi
 	grep -r "<<<< HEAD" && __fail "Address conflicts"
 	__pass "No conflicts"
-	if ( git status | sed 1,6d | egrep -v ".csv$|.svg$|^# *$|^nothing added to commit..*$" );then __fail "Found above files";fi
+	#if ( git status | sed 1,6d | egrep -v ".csv$|.svg$|^# *$|^nothing added to commit..*$" );then __fail "Found above files";fi
 	__pass "No unexpected files"
 	./vendor/bin/phinx migrate -e ${qasite}
 	grunt dist
@@ -81,7 +81,7 @@ help() {
 [ -z "$WORKDIR" ] && __fail "WORKDIR not set"
 qasite=$(uname -n | sed "s/\...*//g")
 [ "$qasite" == "ip-10-90-0-249" ] && qasite="slaine"
-[ "$qasite" == "ip-10-90-0-185" ] && qasite="hammerstein"
+[ "$qasite" == "ip-10-90-0-53" ] && qasite="hammerstein"
 
 [ -z "$1" ] && help || $1 $@
 
