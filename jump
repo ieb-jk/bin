@@ -3,8 +3,10 @@
 options=(
 	"toska.pem centos@52.211.2.62 #Hammerstein"
 	"toska.pem centos@52.212.191.236 #Slaine"
+	"toska.pem centos@52.213.22.119 #Blackblood"
 	"jenkins.pem ec2-user@34.249.244.138 #Jenkins Blue"
 	"jenkins.pem ec2-user@52.209.34.180 # Jenkins Green"
+	"jenkins.pem ec2-user@34.246.189.225 # Jenkins Red"
 	"jenkins.pem ec2-user@34.250.45.144 # Jenkins Worker1"
 	"jenkins.pem ec2-user@34.244.59.70 # Jenkins Worker2"
 	"jenkins.pem ec2-user@54.154.119.217 # Jenkins Worker3"
