@@ -13,7 +13,6 @@ pr() {
 	cd $WORKDIR
 	if [ -z "$2" ];then echo "Resetting to Dev ?";else echo "Preparing PR $2 ?";fi
 	read aaa1
-    #git reset --hard develop
 	git fetch && git checkout -f develop
 	git pull
 	git branch | grep -v "develop" | xargs git branch -D 2>&1 | egrep -v "^error: branch"
@@ -24,7 +23,7 @@ pr() {
 	fi
 	grep -r "<<<< HEAD" && __fail "Address conflicts"
 	__pass "No conflicts"
-	#if ( git status | sed 1,6d | egrep -v ".csv$|.svg$|^# *$|^nothing added to commit..*$" );then __fail "Found above files";fi
+	if ( git ls-files --others --exclude-standard | egrep -v ".csv|.pem|.svg|cron/test.php");then __fail "Found above files";fi 
 	__pass "No unexpected files"
 	./vendor/bin/phinx migrate -e ${qasite}
 	grunt dist
