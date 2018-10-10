@@ -25,6 +25,7 @@ pr() {
 	__pass "No conflicts"
 	if ( git ls-files --others --exclude-standard | egrep -v ".csv|.pem|.svg|cron/test.php");then __fail "Found above files";fi 
 	__pass "No unexpected files"
+	[ "$(git branch | grep '^*' | sed 's/^..//g')" == $t ]  && __pass "Branch switched" || __fail "Check current branch. Issue switching to $2 but on $(git branch)"
 	./vendor/bin/phinx migrate -e ${qasite}
 	grunt dist
 	clearc
