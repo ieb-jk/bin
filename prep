@@ -25,13 +25,10 @@ pr() {
         git pull
         git merge -m "Merge $defaultbranch" $defaultbranch
     fi
-    grep -r "<<<< HEAD" && __fail "Address conflicts"
-    __test "No conflicts"
-    if ( git ls-files --others --exclude-standard | egrep -v ".csv|.pem|.svg|cron/test.php");then __fail "Found unexpected files (above)";fi 
-    __test "No unexpected files"
+    grep -r "<<<< HEAD" && __fail "Address conflicts" ||  __test "No conflicts"
+    (git ls-files --others --exclude-standard | egrep -v ".csv|.pem|.svg|cron/test.php") && __fail "Found unexpected files (above)" || __test "No unexpected files"
     CurrentBranch="$(git branch | grep '^*' | sed 's/^..//g')"
-    [ "$CurrentBranch" == "$branch" ]  || __fail "Could not switch to $branch (currently $CurrentBranch)"
-    __test "Successfully switched to $CurrentBranch"
+    [ "$CurrentBranch" == "$branch" ]  && __test "Successfully switched to $CurrentBranch" || __fail "Could not switch to $branch (currently $CurrentBranch)"
     ./vendor/bin/phinx migrate -e ${qasite}
     grunt dist
     clearc && __test "Cache Cleared"
