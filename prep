@@ -1,62 +1,66 @@
 #!/bin/bash
 
+Checks=""
+defaultbranch="develop"
+
 __fail() {
-	echo -e "\nFAIL: $1\n"
-	exit 2
+    __test "FAIL: $1"  && exit 2
 }
 
-__pass() {
-	echo -e "\nPASS: $1\n"
+__test() {
+    Checks="${Checks}\t- $1\n"
+    echo -e "$1\n"
 }
 
 pr() {
-	cd $WORKDIR
-	if [ -z "$2" ];then echo "Resetting to Dev ?";else echo "Preparing PR $2 ?";fi
-	read aaa1
-	git fetch && git checkout -f develop
-	git pull
-	git branch | grep -v "develop" | xargs git branch -D 2>&1 | egrep -v "^error: branch"
-	if [ ! -z "$2" ];then
-		git checkout $2
-		git pull
-		git merge -m "Merge develop" develop
-	fi
-	grep -r "<<<< HEAD" && __fail "Address conflicts"
-	__pass "No conflicts"
-	if ( git ls-files --others --exclude-standard | egrep -v ".csv|.pem|.svg|cron/test.php");then __fail "Found above files";fi 
-	__pass "No unexpected files"
-	CurrentBranch="$(git branch | grep '^*' | sed 's/^..//g')"
-	[ "$CurrentBranch" == "$2" ]  && __pass "Switched to $CurrentBranch" || __fail "Could not switch to $2 (currently $CurrentBranch)"
-	./vendor/bin/phinx migrate -e ${qasite}
-	grunt dist
-	clearc
-	echo -e "\nAll done\n"
+    cd $WORKDIR
+    branch="${2:-$defaultbranch}"
+    read -p "Switch to $branch ?"
+    composer install --no-dev && __test "Composer updated" || __fail "Composer issues"
+    git fetch && git checkout -f $defaultbranch
+    git pull
+    git branch | grep -v "$defaultbranch" | xargs git branch -D >/dev/null 2>&1 | egrep -v "^error: branch"
+    if [ "$branch" != "$defaultbranch" ];then
+        git checkout $branch
+        git pull
+        git merge -m "Merge $defaultbranch" $defaultbranch
+    fi
+    grep -r "<<<< HEAD" && __fail "Address conflicts"
+    __test "No conflicts"
+    if ( git ls-files --others --exclude-standard | egrep -v ".csv|.pem|.svg|cron/test.php");then __fail "Found unexpected files (above)";fi 
+    __test "No unexpected files"
+    CurrentBranch="$(git branch | grep '^*' | sed 's/^..//g')"
+    [ "$CurrentBranch" == "$branch" ]  || __fail "Could not switch to $branch (currently $CurrentBranch)"
+    __test "Now switched to $CurrentBranch"
+    ./vendor/bin/phinx migrate -e ${qasite}
+    grunt dist
+    clearc && __test "Cache Cleared"
 }
 
 clearc() {
-	(cd /tmp/templateCache/1/${qasite}.allbeauty.com && rm -rf * && echo -e "\n\nCached content $(ls -l)")
+    (cd /tmp/templateCache/1/${qasite}.allbeauty.com && rm -rf * && echo -e "\n\nCached content $(ls -l)")
 }
 
 reindex() {
-	d1="$(date)"
-	echo -e "For complete reset, run;\nphp cron/generateProductAvailability.php\nphp cron/regenerateCatalogues.php\ncron/generateAlgoliaIndices.php force\n"
+    d1="$(date)"
+    echo -e "For complete reset, run;\nphp cron/generateProductAvailability.php\nphp cron/regenerateCatalogues.php\ncron/generateAlgoliaIndices.php force\n"
     clearc
-	INDICES="$WORKDIR/storage/dd_Algolia*"
-	cd $WORKDIR
-	rm -rf $INDICES
-	find $INDICES 2>/dev/null && __fail "$INDICES still remain"
+    INDICES="$WORKDIR/storage/dd_Algolia*"
+    cd $WORKDIR
+    rm -rf $INDICES
+    find $INDICES 2>/dev/null && __fail "$INDICES still remain"
     echo "Regenerating $(grep 'indexName' config.json) on https://www.algolia.com/apps/VS22L5JM4O/explorer/indices"
-	php cron/generateAlgoliaIndices.php force
-	echo -e "Started: $d1\nStopped: $(date)"
+    php cron/generateAlgoliaIndices.php force
+    echo -e "Started: $d1\nStopped: $(date)"
 }
 
 logs() {
-	clear
-	echo "Last ten logs updated..."
-	ls -ltr /var/log/httpd/* | tail -10
-	errlog="$(ls -tr /var/log/httpd/* | grep "error" | tail -1)"
-	echo -e "\n<CR> to tail (or 'O' to open) $errlog ?";read OtO
-	[[ "$OtO" =~ ^(O|o)$ ]] && vim $errlog || (echo "Tailing..." && tail -f $errlog)
+    clear
+    echo "Last ten logs updated..."
+    ls -ltr /var/log/httpd/* | tail -10
+    errlog="$(ls -tr /var/log/httpd/* | grep "error" | tail -1)"
+    echo -e "\n<CR> to tail (or 'O' to open) $errlog ?";read OtO
+    [[ "$OtO" =~ ^(O|o)$ ]] && vim $errlog || (echo "Tailing..." && tail -f $errlog)
 }
 
 
@@ -74,9 +78,9 @@ csv() { # Transpose a line from a CSV with it's header
 
  
 help() {
-	echo -e "\nUsage: $0 [Option]\n\nOptions;"
-	declare -F | grep -v "__" | sed -e "s/^declare -f /\t/g" 
-	echo -e "\nWORKDIR: $WORKDIR\nSERVER.: $qasite\n"
+    echo -e "\nUsage: $0 [Option]\n\nOptions;"
+    declare -F | grep -v "__" | sed -e "s/^declare -f /\t/g" 
+    echo -e "\nWORKDIR: $WORKDIR\nSERVER.: $qasite\n"
 }
 
 [ -z "$WORKDIR" ] && __fail "WORKDIR not set"
@@ -85,4 +89,5 @@ qasite=$(uname -n | sed "s/\...*//g")
 [ "$qasite" == "ip-10-90-0-53" ] && qasite="hammerstein"
 
 [ -z "$1" ] && help || $1 $@
+echo -e "PASSED:\n$Checks"
 
