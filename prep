@@ -31,7 +31,7 @@ pr() {
     __test "No unexpected files"
     CurrentBranch="$(git branch | grep '^*' | sed 's/^..//g')"
     [ "$CurrentBranch" == "$branch" ]  || __fail "Could not switch to $branch (currently $CurrentBranch)"
-    __test "Now switched to $CurrentBranch"
+    __test "Successfully switched to $CurrentBranch"
     ./vendor/bin/phinx migrate -e ${qasite}
     grunt dist
     clearc && __test "Cache Cleared"
