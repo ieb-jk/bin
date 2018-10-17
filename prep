@@ -32,6 +32,7 @@ pr() {
     ./vendor/bin/phinx migrate -e ${qasite}
     grunt dist
     clearc && __test "Cache Cleared"
+    echo -e "PASSED:\n$Checks"
 }
 
 clearc() {
@@ -86,5 +87,3 @@ qasite=$(uname -n | sed "s/\...*//g")
 [ "$qasite" == "ip-10-90-0-53" ] && qasite="hammerstein"
 
 [ -z "$1" ] && help || $1 $@
-echo -e "PASSED:\n$Checks"
-
