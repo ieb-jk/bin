@@ -16,7 +16,7 @@ pr() {
     cd $WORKDIR
     branch="${2:-$defaultbranch}"
     read -p "Confirm, switch to  $branch ?"
-    composer install --no-dev && __test "Composer updated" || __fail "Composer issues"
+    composer install --no-dev && __test "Successfully updated with composer" || __fail "Composer issues"
     git fetch && git checkout -fq $defaultbranch
     git pull
     git branch | grep -v "$defaultbranch" | xargs git branch -D >/dev/null 2>&1 | egrep -v "^error: branch"
