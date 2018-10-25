@@ -29,7 +29,7 @@ pr() {
     (git ls-files --others --exclude-standard | egrep -v ".csv|.pem|.svg|cron/test.php") && __fail "Found unexpected local files (above)" || __test "No unexpected local files"
     CurrentBranch="$(git branch | grep '^*' | sed 's/^..//g')"
     [ "$CurrentBranch" == "$branch" ]  && __test "Successfully switched to $CurrentBranch" || __fail "Could not switch to $branch (currently $CurrentBranch)"
-    composer install --no-dev && __test "Updated composer" || __fail "Composer issues"
+    composer update --no-dev && __test "Updated composer" || __fail "Composer issues"
     ./vendor/bin/phinx migrate -e ${qasite}
     grunt dist
     echo -e "PASSED:\n$Checks"
