@@ -14,8 +14,9 @@ __test() {
 
 pr() {
     cd $WORKDIR
-    branch="${2:-$defaultbranch}"
-    read -p "Confirm, switch to  $branch ?"
+    currentbranch=$(git branch | grep ^* | sed 's/^.* //g')
+    branch="${2:-$currentbranch}"
+    read -p "Confirm, use $branch ?"
     clearc 
     git fetch && git checkout -fq $defaultbranch
     git pull
@@ -95,4 +96,4 @@ qasite=$(uname -n | sed "s/\...*//g")
 [ "$qasite" == "ip-10-90-0-249" ] && qasite="slaine"
 [ "$qasite" == "ip-10-90-0-53" ] && qasite="hammerstein"
 
-[ -z "$1" ] && help || $1 $@
+[ -z "$1" ] && help || eval $1 $@
