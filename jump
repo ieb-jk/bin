@@ -8,6 +8,7 @@ options=(
 	"jenkins.pem ec2-user@34.250.45.144  # Jenkins Worker1"
 	"jenkins.pem ec2-user@34.244.59.70   # Jenkins Worker2"
 	"jenkins.pem ec2-user@54.154.119.217 # Jenkins Worker3"
+	"jenkins.pem ec2-user@176.34.150.253 # Jenkins Worker4 Sel Testin"
 )
 
 [ -z "$1" ] && Cmd="ssh" || Cmd="sftp"
