@@ -8,7 +8,7 @@ __fail() {
 }
 
 __test() {
-    Checks="${Checks}\t- $1\n"
+    Checks+="\t- $1\n"
     echo -e "$1\n"
 }
 
