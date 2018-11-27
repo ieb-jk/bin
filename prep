@@ -95,5 +95,6 @@ help() {
 qasite=$(uname -n | sed "s/\...*//g")
 [ "$qasite" == "ip-10-90-0-249" ] && qasite="slaine"
 [ "$qasite" == "ip-10-90-0-53" ] && qasite="hammerstein"
+[ "$qasite" == "ip-10-90-0-18" ] && qasite="nemisis"
 
 [ -z "$1" ] && help || eval $1 $@
