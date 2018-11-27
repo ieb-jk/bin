@@ -37,7 +37,7 @@ pr() {
 }
 
 clearc() {
-    (cd /tmp/templateCache/1/${qasite}.allbeauty.com && rm -rf * && echo -e "\n\nCached content $(ls -l)") && __test "Cleared cache" || __fail "Clear cache"
+    (cd /tmp/templateCache/1 && rm -rf ${qasite}.allbeauty.com && echo -e "\n\nCached content $(ls -l)") && __test "Cleared cache" || __fail "Clear cache"
 }
 
 reindex() {
