@@ -21,4 +21,3 @@ do
 	C="$Cmd -i ~/.ssh/$opt"
 	echo "$C...";eval $C
 done
-
